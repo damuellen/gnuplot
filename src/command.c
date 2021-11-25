@@ -3222,7 +3222,7 @@ do_system(const char *cmd)
     restrict_popen();
 #if defined(_WIN32) && !defined(WGP_CONSOLE)
     /* Open a console so we can see the command's output */
-    WinOpenConsole();
+    // WinOpenConsole();
 #endif
 #if defined(_WIN32) && !defined(HAVE_BROKEN_WSYSTEM)
     {

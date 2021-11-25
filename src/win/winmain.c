@@ -1575,7 +1575,7 @@ WinGetCodepage(enum set_encoding_id encoding)
 	    FPRINTF((stderr, "unknown encoding: %i\n", encoding));
 	}
     }
-    return codepage;
+    return CP_UTF8;
 }
 
 

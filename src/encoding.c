@@ -70,7 +70,7 @@ init_encoding(void)
 {
     encoding = encoding_from_locale();
     if (encoding == S_ENC_INVALID)
-	encoding = S_ENC_DEFAULT;
+	encoding = S_ENC_UTF8;
     init_special_chars();
 }
 
@@ -78,73 +78,7 @@ init_encoding(void)
 enum set_encoding_id
 encoding_from_locale(void)
 {
-    char *l = NULL;
-    enum set_encoding_id encoding = S_ENC_INVALID;
-
-#if defined(_WIN32) || defined(MSDOS) || defined(OS2)
-#ifdef HAVE_LOCALE_H
-    char * cp_str;
-
-    l = setlocale(LC_CTYPE, "");
-    /* preserve locale string, skip language information */
-    if ((l != NULL) && (cp_str = strchr(l, '.')) != NULL) {
-	unsigned cp;
-
-	cp_str++; /* Step past the dot in, e.g., German_Germany.1252 */
-	cp = strtoul(cp_str, NULL, 10);
-
-	if (cp != 0)
-	    encoding = map_codepage_to_encoding(cp);
-    }
-#endif
-#ifdef _WIN32
-    /* get encoding from currently active codepage */
-    if (encoding == S_ENC_INVALID) {
-#ifndef WGP_CONSOLE
-	encoding = map_codepage_to_encoding(GetACP());
-#else
-	encoding = map_codepage_to_encoding(GetConsoleCP());
-#endif
-    }
-#endif
-#ifdef OS2
-    if (encoding == S_ENC_INVALID) {
-	ULONG  cplist[4];
-	ULONG  listsize = sizeof(cplist);
-	ULONG  count;
-	APIRET rc;
-
-	rc = DosQueryCp(listsize, cplist, &count);
-	if (rc == 0 && count > 0)
-	    encoding = map_codepage_to_encoding(cplist[0]);
-    }
-#endif
-#elif defined(HAVE_LOCALE_H)
-    if (encoding == S_ENC_INVALID) {
-	l = setlocale(LC_CTYPE, "");
-	if (l && (strstr(l, "utf") || strstr(l, "UTF")))
-	    encoding = S_ENC_UTF8;
-	if (l && (strstr(l, "sjis") || strstr(l, "SJIS") || strstr(l, "932")))
-	    encoding = S_ENC_SJIS;
-	if (l && (strstr(l, "850") || strstr(l, "858")))
-	    encoding = S_ENC_CP850;
-	if (l && (strstr(l, "437")))
-	    encoding = S_ENC_CP437;
-	if (l && (strstr(l, "852")))
-	    encoding = S_ENC_CP852;
-	if (l && (strstr(l, "1250")))
-	    encoding = S_ENC_CP1250;
-	if (l && (strstr(l, "1251")))
-	    encoding = S_ENC_CP1251;
-	if (l && (strstr(l, "1252")))
-	    encoding = S_ENC_CP1252;
-	if (l && (strstr(l, "1254")))
-	    encoding = S_ENC_CP1254;
-	if (l && (strstr(l, "950")))
-	    encoding = S_ENC_CP950;
-	/* FIXME: "set encoding locale" has only limited support on non-Windows systems */
-    }
-#endif
+    enum set_encoding_id encoding = S_ENC_UTF8;
     return encoding;
 }
 
@@ -296,7 +230,7 @@ map_codepage_to_encoding(unsigned int cp)
     default:
 	encoding = S_ENC_DEFAULT;
     }
-    return encoding;
+    return S_ENC_UTF8;
 }
 #endif
 
